@@ -1,0 +1,48 @@
+name: TShock Server - Build and Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      WORLD_NAME:
+        description: 'Nombre del mundo de TShock'
+        required: true
+        default: 'MiMundo'
+      MAX_PLAYERS:
+        description: 'Cantidad máxima de jugadores'
+        required: true
+        default: '10'
+      PORT:
+        description: 'Puerto del servidor TShock'
+        required: true
+        default: '7777'
+      AUTOCREATE_WORLD:
+        description: 'Número de mundo para autocrear si no existe (0 para deshabilitar)'
+        required: true
+        default: '3'
+
+jobs:
+  build_and_run:
+    name: Build and Run TShock Server
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: TDD788/TShock
+        ref: main
+      
+    - name: Install Mono and Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y mono-complete screen
+        
+    - name: Build TShock (if needed)
+      run: |
+        cd TShock
+        # Agregar aquí los comandos para compilar TShock si es necesario
+        
+    - name: Start TShock Server
+      run: |
+        cd TShock
+        screen -d -m mono TerrariaServer.exe -world ${{ github.event.inputs.WORLD_NAME }}.tshock -port ${{ github.event.inputs.PORT }} -maxplayers ${{ github.event.inputs.MAX_PLAYERS }} -autocreate ${{ github.event.inputs.AUTOCREATE_WORLD }}
+        
